@@ -1,1 +1,1 @@
-ffff
+#string.h
