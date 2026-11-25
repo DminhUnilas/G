@@ -1,1 +1,85 @@
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
+/* Étape 1 : définir les dimensions et le symbole d'une case vide. */
+#define LIGNES 6
+#define COLONNES 7
+#define VIDE '.'
+
+void initialise_board(char board[LIGNES][COLONNES]);
+void print_board(char board[LIGNES][COLONNES]);
+int player_turn(char board[LIGNES][COLONNES], char player_n);
+int win_check(char board[LIGNES][COLONNES], char player_n);
+
+int main(void)
+{
+    char board[LIGNES][COLONNES];
+    char player_1 = 'a', player_2 = 'b';
+    int turn_count = 0;
+    /* Étape 2 : remplir la grille de cases vides, puis l'afficher. */
+    initialise_board(board);
+    print_board(board);
+    /* Étape 3 : alterner les joueurs après chaque coup valide. */
+    while (turn_count < LIGNES * COLONNES) {
+        char joueur = (turn_count % 2 == 0) ? player_1 : player_2;
+        /* Si l'entrée est fermée, arrêter la partie sans compter de coup. */
+        if (!player_turn(board, joueur)) {
+            puts("\nPartie interrompue.");
+            return 0;
+        }
+        turn_count++;
+        print_board(board);
+        /* Tester la victoire avant le match nul : le dernier coup peut gagner. */
+        if (win_check(board, joueur)) {
+            printf("Le joueur %c a gagné !\n", joueur);
+            return 0;
+        }
+    }
+    /* On arrive ici seulement si toutes les cases sont occupées sans victoire. */
+    puts("Match nul !");
+    return 0;
+}
+
+void initialise_board(char board[LIGNES][COLONNES])
+{
+    /* L'indice 0 désigne la ligne du haut. On initialise chaque case. */
+    for (int i = 0; i < LIGNES; i++) {
+        for (int j = 0; j < COLONNES; j++) {
+            board[i][j] = VIDE;
+        }
+    }
+}
+void print_board(char board[LIGNES][COLONNES])
+{
+    /* Afficher la grille de haut en bas, puis numéroter les colonnes. */
+    for (int i = 0; i < LIGNES; i++) {
+        for (int j = 0; j < COLONNES; j++) {
+            printf("|%c", board[i][j]);
+        }
+        puts("|");
+    }
+    for (int j = 1; j <= COLONNES; j++) {
+        printf(" %d", j);
+    }
+    puts("\n");
+}
+int player_turn(char board[LIGNES][COLONNES], char player_n)
+{
+    char saisie[64];
+    /* Étape 4 : recommencer la saisie tant qu'aucun jeton n'a été posé. */
+    for (;;) {
+        printf("Joueur %c, choisissez une colonne (1-%d) : ", player_n, COLONNES);
+        fflush(stdout);
+        if (fgets(saisie, sizeof saisie, stdin) == NULL) {
+            return 0;
+        }
+        /* Si la ligne ne tient pas dans le tableau, vider le reste et réessayer. */
+        if (strchr(saisie, '\n') == NULL && !feof(stdin)) {
+            int c;
+            while ((c = getchar()) != '\n' && c != EOF) {
+                /* Ignorer le reste de la ligne. */
+            }
+            puts("Saisie trop longue.");
+            conti
